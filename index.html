@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level Data</title>
+</head>
+<body>
+    <h1>Level Data</h1>
+    <pre id="levelData"></pre>
+
+    <script>
+        // Get the URL parameter containing the level data
+        var urlParams = new URLSearchParams(window.location.search);
+        var levelData = urlParams.get('data');
+        
+        // Insert the level data into the <pre> tag
+        if (levelData) {
+            document.getElementById('levelData').textContent = decodeURIComponent(levelData);
+        } else {
+            document.getElementById('levelData').textContent = "No data received.";
+        }
+    </script>
+</body>
+</html>

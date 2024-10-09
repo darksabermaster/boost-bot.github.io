@@ -7,7 +7,7 @@
     <style>
         /* Add CSS for better text wrapping */
         body {
-            font-family: Arial, comic-sans;
+            font-family: Arial, sans-serif;
             padding: 20px;
         }
 
@@ -17,7 +17,7 @@
             max-width: 100%; /* Allow the text to fit the screen */
             border: 1px solid #ccc; /* Optional: add border */
             padding: 10px; /* Optional: add padding */
-            background-color: #808080; /* Optional: background color */
+            background-color: #909090; /* Optional: background color */
         }
     </style>
 </head>
@@ -26,28 +26,19 @@
     <pre id="levelData"></pre>
 
     <script>
-        // Function to get the URL parameter containing the level data
-        function getUrlParameter(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
+        // Get the URL parameter containing the level data
+        var urlParams = new URLSearchParams(window.location.search);
+        var levelData = urlParams.get('data');
+        
+        // Insert the level data into the <pre> tag
+        var levelDataElement = document.getElementById('levelData');
+
+        if (levelData) {
+            // Decode and append the level data to the existing content
+            levelDataElement.textContent += decodeURIComponent(levelData) + "\n\n"; // Add a newline for separation
+        } else {
+            levelDataElement.textContent = "No data received.";
         }
-
-        // Insert all level data into the <pre> tag
-        function displayLevelData() {
-            const levelData = getUrlParameter('data');
-            const preElement = document.getElementById('levelData');
-
-            // Check if there is data
-            if (levelData) {
-                // Decode the level data and display it
-                preElement.textContent = decodeURIComponent(levelData);
-            } else {
-                preElement.textContent = "No data received.";
-            }
-        }
-
-        // Display the level data on page load
-        displayLevelData();
     </script>
 </body>
 </html>

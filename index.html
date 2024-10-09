@@ -5,37 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Level Data</title>
     <style>
-        /* Add CSS for better text wrapping */
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
+            text-align: center;
         }
 
         pre {
-            white-space: pre-wrap; /* Enable text wrapping */
-            word-wrap: break-word; /* Break long words */
-            max-width: 100%; /* Allow the text to fit the screen */
-            border: 1px solid #ccc; /* Optional: add border */
-            padding: 10px; /* Optional: add padding */
-            background-color: #909090; /* Optional: background color */
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            max-width: 100%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
         }
     </style>
 </head>
 <body>
-    <h1>Level Data</h1>
+    <h1>Level Data Copied to Clipboard</h1>
+    <p>Your level data has been copied to the clipboard. You can now use it to upload your level!.</p>
+
     <pre id="levelData"></pre>
 
     <script>
         // Get the URL parameter containing the level data
         var urlParams = new URLSearchParams(window.location.search);
         var levelData = urlParams.get('data');
-        
-        // Insert the level data into the <pre> tag
         var levelDataElement = document.getElementById('levelData');
 
         if (levelData) {
-            // Decode and append the level data to the existing content
-            levelDataElement.textContent += decodeURIComponent(levelData) + "\n\n"; // Add a newline for separation
+            var decodedData = decodeURIComponent(levelData);
+
+            // Display a portion of the level data for feedback
+            levelDataElement.textContent = decodedData.substring(0, 1000) + "..."; // Display only part of the data
+
+            // Copy the data to the clipboard
+            navigator.clipboard.writeText(decodedData).then(function() {
+                console.log('Level data copied to clipboard successfully.');
+            }, function(err) {
+                console.error('Failed to copy the text to clipboard.', err);
+            });
         } else {
             levelDataElement.textContent = "No data received.";
         }

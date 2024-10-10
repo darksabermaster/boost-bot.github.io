@@ -28,8 +28,8 @@
 <body>
     <h1>Level Data</h1>
     <pre id="levelData"></pre>
-
-    <button id="saveButton" onclick="saveToFile()">Save Chunk as .txt</button>
+    
+    <button id="saveButton" onclick="saveAllChunks()">Save All Chunks as .txt</button>
 
     <script>
         // Store all chunks in an array
@@ -39,21 +39,22 @@
         var urlParams = new URLSearchParams(window.location.search);
         var levelData = urlParams.get('data');
         var chunkNumber = urlParams.get('chunk');
-        
+
         // Insert the level data into the <pre> tag
         if (levelData) {
             document.getElementById('levelData').textContent = decodeURIComponent(levelData);
+            // Store this chunk in the array for later saving
+            allChunks.push(decodeURIComponent(levelData));
         } else {
             document.getElementById('levelData').textContent = "No data received.";
         }
 
-        // Save this chunk to a file
-        function saveToFile() {
-            allChunks.push(document.getElementById('levelData').textContent);
-            var blob = new Blob(allChunks, {type: "text/plain;charset=utf-8"});
+        // Save all chunks to a file
+        function saveAllChunks() {
+            var blob = new Blob(allChunks, { type: "text/plain;charset=utf-8" });
             var link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = "level_data_chunk_" + chunkNumber + ".txt";
+            link.download = "level_data_all_chunks.txt";
             link.click();
         }
     </script>

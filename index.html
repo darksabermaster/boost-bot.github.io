@@ -9,54 +9,46 @@
             font-family: Arial, sans-serif;
             padding: 20px;
         }
-
         pre {
             white-space: pre-wrap; /* Enable text wrapping */
             word-wrap: break-word; /* Break long words */
             max-width: 100%; /* Allow the text to fit the screen */
-            border: 1px solid #ccc;
-            padding: 10px;
-            background-color: #f9f9f9;
-        }
-
-        button {
-            margin-top: 20px;
-            padding: 10px;
+            border: 1px solid #ccc; /* Optional: add border */
+            padding: 10px; /* Optional: add padding */
+            background-color: #f9f9f9; /* Optional: background color */
         }
     </style>
 </head>
 <body>
     <h1>Level Data</h1>
-    <pre id="levelData">Loading...</pre>
-    
-    <button id="saveButton" onclick="saveAsNewFile()">Save Level Data</button>
+    <pre id="levelData"></pre>
+    <button id="downloadButton">Download Level Data</button>
 
     <script>
-        // Fetch the contents of boost_bot_level.txt
-        fetch('boost_bot_level.txt')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                return response.text();
-            })
-            .then(data => {
-                document.getElementById('levelData').textContent = data;
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-                document.getElementById('levelData').textContent = "Failed to load data.";
-            });
+        // Get the URL parameter containing the level data
+        var urlParams = new URLSearchParams(window.location.search);
+        var levelData = urlParams.get('data');
 
-        // Function to save the content as a new file
-        function saveAsNewFile() {
-            var levelData = document.getElementById('levelData').textContent;
-            var blob = new Blob([levelData], { type: "text/plain;charset=utf-8" });
-            var link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "new_level_data.txt"; // Set a name for the new file
-            link.click();
+        // Insert the level data into the <pre> tag
+        if (levelData) {
+            document.getElementById('levelData').textContent = decodeURIComponent(levelData);
+        } else {
+            document.getElementById('levelData').textContent = "No data received.";
         }
+
+        // Function to download the level data as a txt file
+        document.getElementById('downloadButton').addEventListener('click', function() {
+            var textToSave = document.getElementById('levelData').textContent;
+            var blob = new Blob([textToSave], { type: 'text/plain' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'boost_bot_level.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url); // Clean up the URL object
+        });
     </script>
 </body>
 </html>

@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level Data - Chunk Viewer</title>
+    <title>Level Data</title>
     <style>
+        /* Add CSS for better text wrapping */
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
@@ -18,32 +19,20 @@
             padding: 10px; /* Optional: add padding */
             background-color: #f9f9f9; /* Optional: background color */
         }
-
-        h1, h2 {
-            margin: 0 0 10px;
-        }
     </style>
 </head>
 <body>
-    <h1>Level Data - Chunk Viewer</h1>
-    <h2 id="chunkInfo"></h2>
+    <h1>Level Data</h1>
     <pre id="levelData"></pre>
 
     <script>
-        // Get the URL parameters containing the level data, chunk number, and total chunks
+        // Get the URL parameter containing the level data
         var urlParams = new URLSearchParams(window.location.search);
         var levelData = urlParams.get('data');
-        var chunkNumber = urlParams.get('chunk');
-        var totalChunks = urlParams.get('total');
         
-        // Insert the chunk info
-        if (chunkNumber && totalChunks) {
-            document.getElementById('chunkInfo').textContent = "Chunk " + chunkNumber + " of " + totalChunks;
-        }
-
         // Insert the level data into the <pre> tag
         if (levelData) {
-            document.getElementById('levelData').textContent = decodeURIComponent(levelData);
+            document.getElementById('levelData').textContent = decodeURIComponent(levelData).replace(/---chunk---/g, '\n'); // Replace chunk delimiters
         } else {
             document.getElementById('levelData').textContent = "No data received.";
         }

@@ -3,50 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level Data</title>
+    <title>Level Data - Chunk Viewer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
-            text-align: center;
         }
 
         pre {
-            white-space: pre-wrap; 
-            word-wrap: break-word; 
-            max-width: 100%;
-            border: 1px solid #ccc;
-            padding: 10px;
-            background-color: #f9f9f9;
+            white-space: pre-wrap; /* Enable text wrapping */
+            word-wrap: break-word; /* Break long words */
+            max-width: 100%; /* Allow the text to fit the screen */
+            border: 1px solid #ccc; /* Optional: add border */
+            padding: 10px; /* Optional: add padding */
+            background-color: #f9f9f9; /* Optional: background color */
+        }
+
+        h1, h2 {
+            margin: 0 0 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Level Data Copied to Clipboard</h1>
-    <p>Your level data has been copied to the clipboard. You can now use it to upload your level!.</p>
-
+    <h1>Level Data - Chunk Viewer</h1>
+    <h2 id="chunkInfo"></h2>
     <pre id="levelData"></pre>
 
     <script>
-        // Get the URL parameter containing the level data
+        // Get the URL parameters containing the level data, chunk number, and total chunks
         var urlParams = new URLSearchParams(window.location.search);
         var levelData = urlParams.get('data');
-        var levelDataElement = document.getElementById('levelData');
+        var chunkNumber = urlParams.get('chunk');
+        var totalChunks = urlParams.get('total');
+        
+        // Insert the chunk info
+        if (chunkNumber && totalChunks) {
+            document.getElementById('chunkInfo').textContent = "Chunk " + chunkNumber + " of " + totalChunks;
+        }
 
+        // Insert the level data into the <pre> tag
         if (levelData) {
-            var decodedData = decodeURIComponent(levelData);
-
-            // Display a portion of the level data for feedback
-            levelDataElement.textContent = decodedData.substring(0, 1000) + "..."; // Display only part of the data
-
-            // Copy the data to the clipboard
-            navigator.clipboard.writeText(decodedData).then(function() {
-                console.log('Level data copied to clipboard successfully.');
-            }, function(err) {
-                console.error('Failed to copy the text to clipboard.', err);
-            });
+            document.getElementById('levelData').textContent = decodeURIComponent(levelData);
         } else {
-            levelDataElement.textContent = "No data received.";
+            document.getElementById('levelData').textContent = "No data received.";
         }
     </script>
 </body>

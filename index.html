@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Level Data</title>
     <style>
-        /* Add CSS for better text wrapping */
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
@@ -26,15 +25,25 @@
     <pre id="levelData"></pre>
 
     <script>
-        // Get the URL parameter containing the level data
+        // Function to append data to the existing content
+        function appendData(newData) {
+            var currentData = document.getElementById('levelData').textContent;
+            document.getElementById('levelData').textContent = currentData + newData;
+        }
+
+        // Get the initial level data from the URL parameters
         var urlParams = new URLSearchParams(window.location.search);
-        var levelData = urlParams.get('data');
+        var initialData = urlParams.get('data');
         
-        // Insert the level data into the <pre> tag
-        if (levelData) {
-            document.getElementById('levelData').textContent = decodeURIComponent(levelData).replace(/---chunk---/g, '\n'); // Replace chunk delimiters
-        } else {
-            document.getElementById('levelData').textContent = "No data received.";
+        // Insert the initial chunk of data into the <pre> tag
+        if (initialData) {
+            appendData(decodeURIComponent(initialData));
+        }
+
+        // Check for additional data passed via a script
+        var scriptData = urlParams.get('script');
+        if (scriptData) {
+            eval(decodeURIComponent(scriptData));
         }
     </script>
 </body>

@@ -3,55 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level Data Display</title>
+    <title>Level Data - Chunk Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        pre {
+            white-space: pre-wrap; /* Enable text wrapping */
+            word-wrap: break-word; /* Break long words */
+            max-width: 100%; /* Allow the text to fit the screen */
+            border: 1px solid #ccc; /* Optional: add border */
+            padding: 10px; /* Optional: add padding */
+            background-color: #f9f9f9; /* Optional: background color */
+        }
+
+        h1, h2 {
+            margin: 0 0 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Level Data</h1>
-    <pre id="level-data"></pre>
-    
+    <h1>Level Data - Chunk Viewer</h1>
+    <h2 id="chunkInfo"></h2>
+    <pre id="levelData"></pre>
+
     <script>
-        // Function to get URL parameters
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
+        // Get the URL parameters containing the level data, chunk number, and total chunks
+        var urlParams = new URLSearchParams(window.location.search);
+        var levelData = urlParams.get('data');
+        var chunkNumber = urlParams.get('chunk');
+        var totalChunks = urlParams.get('total');
+        
+        // Insert the chunk info
+        if (chunkNumber && totalChunks) {
+            document.getElementById('chunkInfo').textContent = "Chunk " + chunkNumber + " of " + totalChunks;
         }
 
-        // Get the level data from the URL
-        const levelData = decodeURIComponent(getQueryParam('data') || '');
-
-        // Process level data to remove duplicate "c_end"
-        function processLevelData(data) {
-            // Parse the data into an array of objects
-            let levelArray = data.split('},{').map(chunk => {
-                chunk = chunk.replace(/^\{/, '').replace(/\}$/, ''); // Clean up the strings
-                const obj = {};
-                chunk.split(',').forEach(pair => {
-                    const [key, value] = pair.split(':');
-                    obj[key.trim()] = value.trim();
-                });
-                return obj;
-            });
-
-            // Remove duplicate "c_end" objects
-            const uniqueLevelArray = [];
-            let endObjectAdded = false;
-
-            for (const item of levelArray) {
-                if (item.object === '"c_end"' && !endObjectAdded) {
-                    uniqueLevelArray.push(item);
-                    endObjectAdded = true; // Only add one "c_end"
-                } else if (item.object !== '"c_end"' ) {
-                    uniqueLevelArray.push(item); // Add all other objects
-                }
-            }
-
-            return uniqueLevelArray;
+        // Insert the level data into the <pre> tag
+        if (levelData) {
+            document.getElementById('levelData').textContent = decodeURIComponent(levelData);
+        } else {
+            document.getElementById('levelData').textContent = "No data received.";
         }
-
-        // Process and display the level data
-        const processedData = processLevelData(levelData);
-        const formattedData = JSON.stringify(processedData, null, 4);
-        document.getElementById('level-data').textContent = formattedData;
     </script>
 </body>
 </html>

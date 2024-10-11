@@ -41,16 +41,9 @@
             document.getElementById('chunkInfo').textContent = "Chunk " + chunkNumber + " of " + totalChunks;
         }
 
-        // Function to decode Base64 encoded data
-        function base64Decode(base64) {
-            var decodedData = atob(base64);
-            return decodedData;
-        }
-
         // Insert the level data into the <pre> tag
         if (levelData) {
-            // Decode Base64 before inserting into the <pre> tag
-            document.getElementById('levelData').textContent = base64Decode(levelData);
+            document.getElementById('levelData').textContent = decodeURIComponent(levelData);
         } else {
             document.getElementById('levelData').textContent = "No data received.";
         }

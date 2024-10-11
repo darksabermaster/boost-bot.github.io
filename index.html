@@ -12,6 +12,7 @@
 
     <script>
         let accumulatedData = "";
+        let allChunks = [];
 
         // Function to get URL parameters
         function getURLParameters() {
@@ -25,7 +26,7 @@
             return params;
         }
 
-        // Function to display level data and accumulate it for download
+        // Function to display level data
         function displayLevelData(data) {
             const container = document.getElementById('levelDataContainer');
             const uniqueData = [];
@@ -35,6 +36,7 @@
                 const jsonString = JSON.stringify(item);
                 if (!uniqueData.some(existingItem => existingItem.object === item.object && existingItem.x === item.x && existingItem.y === item.y)) {
                     uniqueData.push(item);
+                    allChunks.push(jsonString); // Add to chunk array for download
                     accumulatedData += jsonString + '\n'; // Add to accumulated data
                 }
 
@@ -59,8 +61,12 @@
         // Get the URL parameters and process the data
         const params = getURLParameters();
         if (params.data) {
-            const data = JSON.parse(decodeURIComponent(params.data));
-            displayLevelData(data);
+            try {
+                const data = JSON.parse(decodeURIComponent(params.data));
+                displayLevelData(data);
+            } catch (e) {
+                console.error("Failed to parse data: ", e);
+            }
         }
 
         // Add an event listener to the download button

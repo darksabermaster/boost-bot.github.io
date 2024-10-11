@@ -21,7 +21,7 @@
 
         // Process level data to remove duplicate "c_end"
         function processLevelData(data) {
-            // Split the data into individual objects
+            // Parse the data into an array of objects
             let levelArray = data.split('},{').map(chunk => {
                 chunk = chunk.replace(/^\{/, '').replace(/\}$/, ''); // Clean up the strings
                 const obj = {};
@@ -32,26 +32,20 @@
                 return obj;
             });
 
-            // Check if the last object is "c_end"
-            if (levelArray.length > 0 && levelArray[levelArray.length - 1].object === '"c_end"') {
-                // Only keep the last "c_end" and remove others
-                const uniqueLevelArray = [];
-                let endObjectAdded = false;
+            // Remove duplicate "c_end" objects
+            const uniqueLevelArray = [];
+            let endObjectAdded = false;
 
-                for (const item of levelArray) {
-                    if (item.object === '"c_end"') {
-                        if (!endObjectAdded) {
-                            uniqueLevelArray.push(item); // Add the first "c_end"
-                            endObjectAdded = true; // Flag to ensure only one is added
-                        }
-                    } else {
-                        uniqueLevelArray.push(item); // Add all other objects
-                    }
+            for (const item of levelArray) {
+                if (item.object === '"c_end"' && !endObjectAdded) {
+                    uniqueLevelArray.push(item);
+                    endObjectAdded = true; // Only add one "c_end"
+                } else if (item.object !== '"c_end"' ) {
+                    uniqueLevelArray.push(item); // Add all other objects
                 }
-                return uniqueLevelArray;
             }
 
-            return levelArray; // Return the original array if no last "c_end"
+            return uniqueLevelArray;
         }
 
         // Process and display the level data

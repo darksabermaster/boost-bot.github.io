@@ -9,46 +9,71 @@
             font-family: Arial, sans-serif;
             padding: 20px;
         }
+
         pre {
-            white-space: pre-wrap; /* Enable text wrapping */
-            word-wrap: break-word; /* Break long words */
-            max-width: 100%; /* Allow the text to fit the screen */
-            border: 1px solid #ccc; /* Optional: add border */
-            padding: 10px; /* Optional: add padding */
-            background-color: #f9f9f9; /* Optional: background color */
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-width: 100%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        #download-btn {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: none;
         }
     </style>
 </head>
 <body>
     <h1>Level Data</h1>
     <pre id="levelData"></pre>
-    <button id="downloadButton">Download Level Data</button>
+    <button id="download-btn">Download as TXT</button>
 
     <script>
-        // Get the URL parameter containing the level data
-        var urlParams = new URLSearchParams(window.location.search);
-        var levelData = urlParams.get('data');
+        let accumulatedData = ""; // Store all chunks here
+        let chunkCount = 0; // Count the number of chunks received
 
-        // Insert the level data into the <pre> tag
-        if (levelData) {
-            document.getElementById('levelData').textContent = decodeURIComponent(levelData);
+        // Function to accumulate data and update the display
+        function receiveChunk(chunk) {
+            accumulatedData += decodeURIComponent(chunk); // Add chunk to the full data
+            document.getElementById('levelData').textContent = accumulatedData; // Display data in <pre>
+            chunkCount++;
+
+            // Show the download button when all chunks are received
+            if (chunkCount >= 5) { // Assuming you're sending 5 chunks; adjust this number as needed
+                document.getElementById('download-btn').style.display = 'block';
+            }
+        }
+
+        // Function to download the accumulated data as a text file
+        function downloadFile() {
+            const blob = new Blob([accumulatedData], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'boost_bot_level.txt';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Hook up the download button
+        document.getElementById('download-btn').addEventListener('click', downloadFile);
+
+        // Get the data chunk from the URL and call receiveChunk function
+        const urlParams = new URLSearchParams(window.location.search);
+        const chunk = urlParams.get('data');
+        if (chunk) {
+            receiveChunk(chunk);
         } else {
             document.getElementById('levelData').textContent = "No data received.";
         }
-
-        // Function to download the level data as a txt file
-        document.getElementById('downloadButton').addEventListener('click', function() {
-            var textToSave = document.getElementById('levelData').textContent;
-            var blob = new Blob([textToSave], { type: 'text/plain' });
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = 'boost_bot_level.txt';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url); // Clean up the URL object
-        });
     </script>
 </body>
 </html>

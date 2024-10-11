@@ -3,50 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level Data Viewer</title>
+    <title>Level Data - Chunk Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        pre {
+            white-space: pre-wrap; /* Enable text wrapping */
+            word-wrap: break-word; /* Break long words */
+            max-width: 100%; /* Allow the text to fit the screen */
+            border: 1px solid #ccc; /* Optional: add border */
+            padding: 10px; /* Optional: add padding */
+            background-color: #f9f9f9; /* Optional: background color */
+        }
+
+        h1, h2 {
+            margin: 0 0 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Level Data</h1>
-    <div id="levelDataContainer"></div>
+    <h1>Level Data - Chunk Viewer</h1>
+    <h2 id="chunkInfo"></h2>
+    <pre id="levelData"></pre>
 
     <script>
-        // Function to get URL parameters
-        function getURLParameters() {
-            const params = {};
-            const queryString = window.location.search.substring(1);
-            const regex = /([^&=]+)=([^&]*)/g;
-            let match;
-            while (match = regex.exec(queryString)) {
-                params[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
-            }
-            return params;
+        // Get the URL parameters containing the level data, chunk number, and total chunks
+        var urlParams = new URLSearchParams(window.location.search);
+        var levelData = urlParams.get('data');
+        var chunkNumber = urlParams.get('chunk');
+        var totalChunks = urlParams.get('total');
+        
+        // Insert the chunk info
+        if (chunkNumber && totalChunks) {
+            document.getElementById('chunkInfo').textContent = "Chunk " + chunkNumber + " of " + totalChunks;
         }
 
-        // Function to display level data
-        function displayLevelData(data) {
-            const container = document.getElementById('levelDataContainer');
-            const uniqueData = [];
-
-            // Filter duplicates
-            data.forEach(item => {
-                if (!uniqueData.some(existingItem => existingItem.object === item.object && existingItem.x === item.x && existingItem.y === item.y)) {
-                    uniqueData.push(item);
-                }
-            });
-
-            // Display unique data
-            uniqueData.forEach(item => {
-                const div = document.createElement('div');
-                div.textContent = JSON.stringify(item);
-                container.appendChild(div);
-            });
-        }
-
-        // Get the URL parameters and process the data
-        const params = getURLParameters();
-        if (params.data) {
-            const data = JSON.parse(decodeURIComponent(params.data));
-            displayLevelData(data);
+        // Insert the level data into the <pre> tag
+        if (levelData) {
+            document.getElementById('levelData').textContent = decodeURIComponent(levelData);
+        } else {
+            document.getElementById('levelData').textContent = "No data received.";
         }
     </script>
 </body>

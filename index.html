@@ -3,81 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level Data Debugger</title>
+    <title>Level Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-width: 100%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>Level Data Debugger</h1>
-    <div id="levelDataContainer">Loading data...</div>
-    <button id="downloadButton">Download All Chunks</button>
+    <h1>Level Data</h1>
+    <pre id="levelData"></pre>
+    <button id="downloadButton">Download as TXT</button>
 
     <script>
-        let allChunks = [];
-        let accumulatedData = "";
-
-        // Function to get URL parameters
+        // Function to retrieve URL parameters (including the level data chunk)
         function getURLParameters() {
-            const params = {};
-            const queryString = window.location.search.substring(1);
-            const regex = /([^&=]+)=([^&]*)/g;
-            let match;
-            while (match = regex.exec(queryString)) {
-                params[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
-            }
-            return params;
+            const params = new URLSearchParams(window.location.search);
+            return params.get('data');
         }
 
-        // Function to display level data in the div
-        function displayLevelData(data) {
-            const container = document.getElementById('levelDataContainer');
-            container.textContent = ""; // Clear loading message
-            
-            // Loop through each chunk and display it
-            data.forEach(item => {
-                const div = document.createElement('div');
-                div.textContent = JSON.stringify(item); // Display each chunk as a string
-                container.appendChild(div);
+        // Fetch the level data from the URL
+        const levelData = getURLParameters();
 
-                // Accumulate each chunk for downloading
-                allChunks.push(JSON.stringify(item));
-                accumulatedData += JSON.stringify(item) + '\n'; // Add to accumulated string
-            });
-        }
-
-        // Function to trigger the download of a .txt file
-        function downloadFile(filename, content) {
-            const element = document.createElement('a');
-            const file = new Blob([content], { type: 'text/plain' });
-            element.href = URL.createObjectURL(file);
-            element.download = filename;
-            document.body.appendChild(element); // Append to the body
-            element.click(); // Trigger the download
-            document.body.removeChild(element); // Clean up
-        }
-
-        // Get the URL parameters and process the data
-        const params = getURLParameters();
-        console.log("Received URL Parameters:", params); // Log URL parameters
-
-        const container = document.getElementById('levelDataContainer');
-        if (params.data) {
-            try {
-                const data = JSON.parse(decodeURIComponent(params.data));
-                displayLevelData(data);
-            } catch (e) {
-                console.error("Failed to parse data: ", e);
-                container.textContent = "Failed to parse data: " + e.message; // Show error on page
-            }
+        // Display the level data on the page
+        if (levelData) {
+            document.getElementById('levelData').textContent = decodeURIComponent(levelData);
         } else {
-            container.textContent = "No data received.";
+            document.getElementById('levelData').textContent = "No data received.";
         }
 
-        // Add an event listener to the download button
+        // Download button logic to save the data as a .txt file
         document.getElementById('downloadButton').addEventListener('click', function () {
-            if (accumulatedData) {
-                downloadFile('level_data.txt', accumulatedData); // Download accumulated data
-            } else {
-                alert('No data available to download.');
-            }
+            const blob = new Blob([decodeURIComponent(levelData)], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'level_data.txt';
+            link.click();
         });
     </script>
 </body>

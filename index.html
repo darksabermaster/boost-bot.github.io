@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level Data Viewer</title>
+    <title>Level Data Debugger</title>
 </head>
 <body>
-    <h1>Level Data</h1>
-    <div id="levelDataContainer"></div>
+    <h1>Level Data Debugger</h1>
+    <div id="levelDataContainer">Loading data...</div>
+    <button id="downloadButton">Download All Chunks</button>
 
     <script>
+        let allChunks = [];
+        let accumulatedData = "";
+
         // Function to get URL parameters
         function getURLParameters() {
             const params = {};
@@ -22,32 +26,59 @@
             return params;
         }
 
-        // Function to display level data
+        // Function to display level data in the div
         function displayLevelData(data) {
             const container = document.getElementById('levelDataContainer');
-            const uniqueData = [];
-
-            // Filter duplicates
+            container.textContent = ""; // Clear loading message
+            
+            // Loop through each chunk and display it
             data.forEach(item => {
-                if (!uniqueData.some(existingItem => existingItem.object === item.object && existingItem.x === item.x && existingItem.y === item.y)) {
-                    uniqueData.push(item);
-                }
-            });
-
-            // Display unique data
-            uniqueData.forEach(item => {
                 const div = document.createElement('div');
-                div.textContent = JSON.stringify(item);
+                div.textContent = JSON.stringify(item); // Display each chunk as a string
                 container.appendChild(div);
+
+                // Accumulate each chunk for downloading
+                allChunks.push(JSON.stringify(item));
+                accumulatedData += JSON.stringify(item) + '\n'; // Add to accumulated string
             });
+        }
+
+        // Function to trigger the download of a .txt file
+        function downloadFile(filename, content) {
+            const element = document.createElement('a');
+            const file = new Blob([content], { type: 'text/plain' });
+            element.href = URL.createObjectURL(file);
+            element.download = filename;
+            document.body.appendChild(element); // Append to the body
+            element.click(); // Trigger the download
+            document.body.removeChild(element); // Clean up
         }
 
         // Get the URL parameters and process the data
         const params = getURLParameters();
+        console.log("Received URL Parameters:", params); // Log URL parameters
+
+        const container = document.getElementById('levelDataContainer');
         if (params.data) {
-            const data = JSON.parse(decodeURIComponent(params.data));
-            displayLevelData(data);
+            try {
+                const data = JSON.parse(decodeURIComponent(params.data));
+                displayLevelData(data);
+            } catch (e) {
+                console.error("Failed to parse data: ", e);
+                container.textContent = "Failed to parse data: " + e.message; // Show error on page
+            }
+        } else {
+            container.textContent = "No data received.";
         }
+
+        // Add an event listener to the download button
+        document.getElementById('downloadButton').addEventListener('click', function () {
+            if (accumulatedData) {
+                downloadFile('level_data.txt', accumulatedData); // Download accumulated data
+            } else {
+                alert('No data available to download.');
+            }
+        });
     </script>
 </body>
 </html>

@@ -3,25 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download Level Data</title>
+    <title>Upload and Download Level Data</title>
 </head>
 <body>
-    <h1>Enter Level Data</h1>
-    <textarea id="levelData" rows="10" cols="50" placeholder="Paste your level data here..."></textarea>
-    <br>
-    <button id="downloadButton">Download Level Data</button>
+    <h1>Upload Level Data File</h1>
+    <input type="file" id="fileInput" accept=".txt">
+    <button id="downloadButton" disabled>Download Level Data</button>
+    <pre id="fileContent" style="white-space: pre-wrap;"></pre>
 
     <script>
-        document.getElementById('downloadButton').addEventListener('click', function() {
-            // Retrieve the level data from the textarea
-            const levelData = document.getElementById('levelData').value;
+        const fileInput = document.getElementById('fileInput');
+        const downloadButton = document.getElementById('downloadButton');
+        const fileContentDisplay = document.getElementById('fileContent');
+
+        // When a file is selected
+        fileInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                // Read the file as text
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    fileContentDisplay.textContent = content; // Display the file content
+                    downloadButton.disabled = false; // Enable the download button
+                };
+
+                // Read the file
+                reader.readAsText(file);
+            }
+        });
+
+        // When the download button is clicked
+        downloadButton.addEventListener('click', function() {
+            const levelData = fileContentDisplay.textContent;
 
             if (levelData) {
-                // Create a blob with the level data
                 const blob = new Blob([levelData], { type: 'text/plain' });
                 const url = URL.createObjectURL(blob);
                 
-                // Create a link element and click it to trigger the download
                 const a = document.createElement('a');
                 a.href = url;
                 a.download = 'boost_bot_level.txt'; // Filename for the downloaded file
@@ -30,7 +50,7 @@
                 document.body.removeChild(a); // Clean up
                 URL.revokeObjectURL(url); // Release the object URL
             } else {
-                alert('Please enter level data before downloading.');
+                alert('No content available to download.');
             }
         });
     </script>

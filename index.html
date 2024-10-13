@@ -32,23 +32,23 @@
             return params;
         }
 
-        // Store received chunks
-        let chunks = [];
+        // Initialize an array to store all chunks
+        let allChunks = [];
         const params = getUrlParams();
 
         // Check if there's any data received
         if (params.data) {
-            // Add the received data to the chunks array
-            chunks.push(params.data);
+            // Add the received data to the allChunks array
+            allChunks.push(params.data);
         }
 
-        // Function to display chunks in the container
-        function displayChunks() {
+        // Function to display all chunks in the container
+        function displayAllChunks() {
             const container = document.getElementById('data-container');
             container.innerHTML = ''; // Clear existing content
 
             // Display all chunks
-            chunks.forEach((chunk, index) => {
+            allChunks.forEach((chunk, index) => {
                 const chunkDiv = document.createElement('div');
                 chunkDiv.className = 'chunk';
                 chunkDiv.textContent = `Chunk ${index + 1}: ${chunk}`;
@@ -56,21 +56,22 @@
             });
         }
 
-        // Display the chunks
-        displayChunks();
+        // Display the initial chunk
+        displayAllChunks();
 
-        // Optional: Store chunks in local storage for later use
+        // Store chunks in local storage for later retrieval
         if (params.chunk) {
             localStorage.setItem(`chunk_${params.chunk}`, params.data);
+
             // Retrieve and display all chunks after receiving all parts
             const totalChunks = params.total ? parseInt(params.total) : 1;
             for (let i = 1; i <= totalChunks; i++) {
                 const storedChunk = localStorage.getItem(`chunk_${i}`);
                 if (storedChunk) {
-                    chunks.push(storedChunk);
+                    allChunks.push(storedChunk); // Collect all chunks into one array
                 }
             }
-            displayChunks();
+            displayAllChunks(); // Display all chunks in the single tab
         }
     </script>
 </body>

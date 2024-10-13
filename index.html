@@ -3,50 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level Data Processor</title>
+    <title>Level Data Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .chunk {
+            border: 1px solid #ccc;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
 <body>
-    <h1>Level Data Processor</h1>
-    <div id="output"></div>
+    <h1>Level Data Display</h1>
+    <div id="data-container"></div>
+    
     <script>
-        // Function to process level data
-        function processLevelData(data) {
-            const chunkSize = 5000; // Size of each chunk
-            let index = 0;
+        // Function to get URL parameters
+        function getUrlParams() {
+            const params = {};
+            const parser = new URLSearchParams(window.location.search);
+            for (const [key, value] of parser.entries()) {
+                params[key] = decodeURIComponent(value);
+            }
+            return params;
+        }
 
-            // Process data in chunks
-            function processNextChunk() {
-                if (index < data.length) {
-                    const chunk = data.slice(index, index + chunkSize); // Get the next chunk
-                    index += chunkSize;
+        // Store received chunks
+        let chunks = [];
+        const params = getUrlParams();
 
-                    // Display or handle the chunk (e.g., append to output div)
-                    document.getElementById('output').innerHTML += `<p>${chunk}</p>`;
+        // Check if there's any data received
+        if (params.data) {
+            // Add the received data to the chunks array
+            chunks.push(params.data);
+        }
 
-                    // Process the next chunk after a short delay
-                    setTimeout(processNextChunk, 100); // Adjust delay as needed
-                } else {
-                    // All chunks have been processed
-                    console.log('All data processed.');
+        // Function to display chunks in the container
+        function displayChunks() {
+            const container = document.getElementById('data-container');
+            container.innerHTML = ''; // Clear existing content
+
+            // Display all chunks
+            chunks.forEach((chunk, index) => {
+                const chunkDiv = document.createElement('div');
+                chunkDiv.className = 'chunk';
+                chunkDiv.textContent = `Chunk ${index + 1}: ${chunk}`;
+                container.appendChild(chunkDiv);
+            });
+        }
+
+        // Display the chunks
+        displayChunks();
+
+        // Optional: Store chunks in local storage for later use
+        if (params.chunk) {
+            localStorage.setItem(`chunk_${params.chunk}`, params.data);
+            // Retrieve and display all chunks after receiving all parts
+            const totalChunks = params.total ? parseInt(params.total) : 1;
+            for (let i = 1; i <= totalChunks; i++) {
+                const storedChunk = localStorage.getItem(`chunk_${i}`);
+                if (storedChunk) {
+                    chunks.push(storedChunk);
                 }
             }
-
-            // Start processing chunks
-            processNextChunk();
-        }
-
-        // Function to retrieve URL parameters
-        function getUrlParameter(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
-        }
-
-        // Get the data parameter from the URL
-        const levelData = getUrlParameter('data');
-        if (levelData) {
-            processLevelData(decodeURIComponent(levelData)); // Process the level data
-        } else {
-            document.getElementById('output').innerHTML = '<p>No data found.</p>';
+            displayChunks();
         }
     </script>
 </body>

@@ -3,37 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level Data</title>
+    <title>Level Data Processor</title>
 </head>
 <body>
-    <h1>Level Data</h1>
-    <pre id="levelData"></pre>
-    <button id="downloadBtn">Download Level Data</button>
-
+    <h1>Level Data Processor</h1>
+    <div id="output"></div>
     <script>
-        // Get URL parameters
-        const params = new URLSearchParams(window.location.search);
-        let combinedData = "";
+        // Function to process level data
+        function processLevelData(data) {
+            const chunkSize = 5000; // Size of each chunk
+            let index = 0;
 
-        // Loop through URL parameters to combine data
-        for (let i = 1; i <= parseInt(params.get("total") || "0"); i++) {
-            let data = params.get("data");
-            if (data) {
-                combinedData += decodeURIComponent(data) + "\n"; // Add new line between chunks
+            // Process data in chunks
+            function processNextChunk() {
+                if (index < data.length) {
+                    const chunk = data.slice(index, index + chunkSize); // Get the next chunk
+                    index += chunkSize;
+
+                    // Display or handle the chunk (e.g., append to output div)
+                    document.getElementById('output').innerHTML += `<p>${chunk}</p>`;
+
+                    // Process the next chunk after a short delay
+                    setTimeout(processNextChunk, 100); // Adjust delay as needed
+                } else {
+                    // All chunks have been processed
+                    console.log('All data processed.');
+                }
             }
+
+            // Start processing chunks
+            processNextChunk();
         }
 
-        // Display the combined level data
-        document.getElementById("levelData").innerText = combinedData;
+        // Function to retrieve URL parameters
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
 
-        // Download the combined data as a .txt file
-        document.getElementById("downloadBtn").onclick = function() {
-            const blob = new Blob([combinedData], { type: "text/plain;charset=utf-8" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "level_data.txt";
-            link.click();
-        };
+        // Get the data parameter from the URL
+        const levelData = getUrlParameter('data');
+        if (levelData) {
+            processLevelData(decodeURIComponent(levelData)); // Process the level data
+        } else {
+            document.getElementById('output').innerHTML = '<p>No data found.</p>';
+        }
     </script>
 </body>
 </html>

@@ -3,41 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload and Download Level Data</title>
+    <title>Download Level Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-width: 600px;
+        }
+        h1 {
+            font-size: 24px;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap; /* Preserve whitespace */
+        }
+    </style>
 </head>
 <body>
-    <h1>Upload Level Data File</h1>
-    <input type="file" id="fileInput" accept=".txt">
-    <button id="downloadButton" disabled>Download Level Data</button>
+    <h1>Download Level Data from Local Storage</h1>
+    <button id="downloadButton">Download Level Data</button>
     <pre id="fileContent" style="white-space: pre-wrap;"></pre>
 
     <script>
-        const fileInput = document.getElementById('fileInput');
         const downloadButton = document.getElementById('downloadButton');
         const fileContentDisplay = document.getElementById('fileContent');
 
-        // When a file is selected
-        fileInput.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
+        // Retrieve level data from Local Storage
+        const levelData = localStorage.getItem('boost_bot_level');
 
-                // Read the file as text
-                reader.onload = function(e) {
-                    const content = e.target.result;
-                    fileContentDisplay.textContent = content; // Display the file content
-                    downloadButton.disabled = false; // Enable the download button
-                };
-
-                // Read the file
-                reader.readAsText(file);
-            }
-        });
+        if (levelData) {
+            fileContentDisplay.textContent = levelData; // Display the file content
+        } else {
+            fileContentDisplay.textContent = 'No level data found in Local Storage.';
+        }
 
         // When the download button is clicked
         downloadButton.addEventListener('click', function() {
-            const levelData = fileContentDisplay.textContent;
-
             if (levelData) {
                 const blob = new Blob([levelData], { type: 'text/plain' });
                 const url = URL.createObjectURL(blob);
@@ -50,7 +61,7 @@
                 document.body.removeChild(a); // Clean up
                 URL.revokeObjectURL(url); // Release the object URL
             } else {
-                alert('No content available to download.');
+                alert('No level data available to download.');
             }
         });
     </script>

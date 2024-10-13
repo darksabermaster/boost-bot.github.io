@@ -7,11 +7,16 @@
 </head>
 <body>
     <h1>Download Level Data</h1>
-    <a href="path/to/level_data.txt" download>
-        <button>Download Level Data</button>
-    </a>
+    <a id="downloadLink" href="level_data.txt" style="display:none;">Download</a>
+    <button id="downloadButton">Download Level Data</button>
+
     <script>
-        // Optionally, add a message or additional functionality here
+        document.getElementById("downloadButton").onclick = function() {
+            const link = document.getElementById("downloadLink");
+            link.style.display = "block"; // Show the link
+            link.click(); // Programmatically click the link to trigger download
+            link.style.display = "none"; // Hide the link again
+        };
     </script>
 </body>
 </html>

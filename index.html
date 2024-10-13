@@ -3,67 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download Level Data</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            max-width: 600px;
+    <title>Upload and Download</title>
+    <script>
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const fileContent = e.target.result; // Get the content of the file
+
+                    // Create a download link for the file content
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = URL.createObjectURL(new Blob([fileContent], { type: 'text/plain' }));
+                    downloadLink.download = 'downloaded_file.txt'; // The name for the downloaded file
+                    downloadLink.innerText = 'Download File';
+                    document.body.appendChild(downloadLink); // Append the link to the document
+                };
+
+                reader.readAsText(file); // Read the content of the file as text
+            }
         }
-        h1 {
-            font-size: 24px;
-        }
-        button {
-            padding: 10px 15px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        pre {
-            background-color: #f4f4f4;
-            padding: 10px;
-            border-radius: 5px;
-            white-space: pre-wrap; /* Preserve whitespace */
-        }
-    </style>
+    </script>
 </head>
 <body>
-    <h1>Download Level Data from Local Storage</h1>
-    <button id="downloadButton">Download Level Data</button>
-    <pre id="fileContent" style="white-space: pre-wrap;"></pre>
-
-    <script>
-        const downloadButton = document.getElementById('downloadButton');
-        const fileContentDisplay = document.getElementById('fileContent');
-
-        // Retrieve level data from Local Storage
-        const levelData = localStorage.getItem('boost_bot_level');
-
-        if (levelData) {
-            fileContentDisplay.textContent = levelData; // Display the file content
-        } else {
-            fileContentDisplay.textContent = 'No level data found in Local Storage.';
-        }
-
-        // When the download button is clicked
-        downloadButton.addEventListener('click', function() {
-            if (levelData) {
-                const blob = new Blob([levelData], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'boost_bot_level.txt'; // Filename for the downloaded file
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a); // Clean up
-                URL.revokeObjectURL(url); // Release the object URL
-            } else {
-                alert('No level data available to download.');
-            }
-        });
-    </script>
+    <h1>Upload a File</h1>
+    <input type="file" id="fileInput" accept=".txt" onchange="handleFileUpload(event)">
 </body>
 </html>

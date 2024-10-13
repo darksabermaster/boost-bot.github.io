@@ -4,69 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Level Data</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-
-        pre {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            max-width: 100%;
-            border: 1px solid #ccc;
-            padding: 10px;
-            background-color: #f9f9f9;
-        }
-
-        button {
-            margin-top: 10px;
-        }
-    </style>
 </head>
 <body>
     <h1>Level Data</h1>
     <pre id="levelData"></pre>
-    <button id="downloadBtn" style="display:none;">Download Data as .txt</button>
+    <button id="downloadBtn">Download Level Data</button>
 
     <script>
-        var accumulatedData = "";
-        var totalChunks = 0;
-        var receivedChunks = 0;
+        // Get URL parameters
+        const params = new URLSearchParams(window.location.search);
+        let combinedData = "";
 
-        // Get the URL parameters
-        var urlParams = new URLSearchParams(window.location.search);
-        var chunkData = urlParams.get('data');
-        var chunkIndex = urlParams.get('chunk_index');
-        var total = urlParams.get('total');
-
-        // Initialize total chunks if received
-        if (total) {
-            totalChunks = parseInt(total);
+        // Loop through URL parameters to combine data
+        for (let i = 1; i <= parseInt(params.get("total") || "0"); i++) {
+            let data = params.get("data");
+            if (data) {
+                combinedData += decodeURIComponent(data) + "\n"; // Add new line between chunks
+            }
         }
 
-        // Add the current chunk to accumulated data
-        if (chunkData) {
-            accumulatedData += decodeURIComponent(chunkData);
-            receivedChunks++;
-            document.getElementById('levelData').textContent = accumulatedData;
-        }
+        // Display the combined level data
+        document.getElementById("levelData").innerText = combinedData;
 
-        // Once all chunks are received, show download button
-        if (receivedChunks === totalChunks) {
-            document.getElementById('downloadBtn').style.display = "block";
-        }
-
-        // Download function
-        document.getElementById('downloadBtn').addEventListener('click', function () {
-            var blob = new Blob([accumulatedData], { type: 'text/plain' });
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = 'level_data.txt';
-            a.click();
-            URL.revokeObjectURL(url); // Clean up URL
-        });
+        // Download the combined data as a .txt file
+        document.getElementById("downloadBtn").onclick = function() {
+            const blob = new Blob([combinedData], { type: "text/plain;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "level_data.txt";
+            link.click();
+        };
     </script>
 </body>
 </html>

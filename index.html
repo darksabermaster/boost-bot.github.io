@@ -20,64 +20,52 @@
         }
 
         button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <h1>Level Data</h1>
     <pre id="levelData"></pre>
-    <button id="downloadButton">Download All Chunks as TXT</button>
+    <button id="downloadBtn" style="display:none;">Download Data as .txt</button>
 
     <script>
-        // Function to retrieve URL parameters (including the level data chunk)
-        function getURLParameters() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('data');
+        var accumulatedData = "";
+        var totalChunks = 0;
+        var receivedChunks = 0;
+
+        // Get the URL parameters
+        var urlParams = new URLSearchParams(window.location.search);
+        var chunkData = urlParams.get('data');
+        var chunkIndex = urlParams.get('chunk_index');
+        var total = urlParams.get('total');
+
+        // Initialize total chunks if received
+        if (total) {
+            totalChunks = parseInt(total);
         }
 
-        // Fetch the level data from the URL
-        const levelData = getURLParameters();
-
-        // Display the level data on the page
-        if (levelData) {
-            document.getElementById('levelData').textContent = decodeURIComponent(levelData);
-
-            // Save the chunk in localStorage
-            let storedChunks = localStorage.getItem('level_chunks');
-            if (storedChunks) {
-                storedChunks = JSON.parse(storedChunks);
-            } else {
-                storedChunks = [];
-            }
-            storedChunks.push(decodeURIComponent(levelData));
-            localStorage.setItem('level_chunks', JSON.stringify(storedChunks));
-        } else {
-            document.getElementById('levelData').textContent = "No data received.";
+        // Add the current chunk to accumulated data
+        if (chunkData) {
+            accumulatedData += decodeURIComponent(chunkData);
+            receivedChunks++;
+            document.getElementById('levelData').textContent = accumulatedData;
         }
 
-        // Download button logic to save all the chunks as a single .txt file
-        document.getElementById('downloadButton').addEventListener('click', function () {
-            let allChunks = localStorage.getItem('level_chunks');
-            if (allChunks) {
-                allChunks = JSON.parse(allChunks).join('\n');
-                const blob = new Blob([allChunks], { type: 'text/plain' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = 'complete_level_data.txt';
-                link.click();
-            } else {
-                alert("No data found to download.");
-            }
+        // Once all chunks are received, show download button
+        if (receivedChunks === totalChunks) {
+            document.getElementById('downloadBtn').style.display = "block";
+        }
+
+        // Download function
+        document.getElementById('downloadBtn').addEventListener('click', function () {
+            var blob = new Blob([accumulatedData], { type: 'text/plain' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'level_data.txt';
+            a.click();
+            URL.revokeObjectURL(url); // Clean up URL
         });
     </script>
 </body>

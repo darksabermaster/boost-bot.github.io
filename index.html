@@ -3,98 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level Data Display</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+    <title>Save Data</title>
+    <script>
+        function saveDataAsFile(data, filename) {
+            const blob = new Blob([data], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
-        .chunk {
-            border: 1px solid #ccc;
-            margin: 10px 0;
-            padding: 10px;
-            background-color: #f9f9f9;
-        }
-        #download-btn {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
+
+        // This function will listen for data sent from GameMaker and trigger the save
+        window.addEventListener('message', function(event) {
+            const { data, filename } = event.data;
+            saveDataAsFile(data, filename);
+        }, false);
+    </script>
 </head>
 <body>
-    <h1>Level Data Display</h1>
-    <div id="data-container"></div>
-    
-    <button id="download-btn" style="display: none;">Download Level Data</button>
-    
-    <script>
-        // Function to get URL parameters
-        function getUrlParams() {
-            const params = {};
-            const parser = new URLSearchParams(window.location.search);
-            for (const [key, value] of parser.entries()) {
-                params[key] = decodeURIComponent(value);
-            }
-            return params;
-        }
-
-        // Initialize an array to store all chunks
-        let allChunks = [];
-        const params = getUrlParams();
-
-        // Check if there's any data received
-        if (params.data) {
-            // Add the received data to the allChunks array
-            allChunks[parseInt(params.chunk) - 1] = params.data; // Store chunk in correct order
-        }
-
-        // Function to display all chunks in the container
-        function displayAllChunks() {
-            const container = document.getElementById('data-container');
-            container.innerHTML = ''; // Clear existing content
-
-            // Display all chunks in order
-            allChunks.forEach((chunk, index) => {
-                if (chunk) {
-                    const chunkDiv = document.createElement('div');
-                    chunkDiv.className = 'chunk';
-                    chunkDiv.textContent = `Chunk ${index + 1}: ${chunk}`;
-                    container.appendChild(chunkDiv);
-                }
-            });
-
-            // Show the download button if there are chunks
-            if (allChunks.length > 0) {
-                document.getElementById('download-btn').style.display = 'block';
-            }
-        }
-
-        // Function to download all chunks as a .txt file
-        function downloadData() {
-            const blob = new Blob([allChunks.join('\n')], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'level_data.txt';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url); // Clean up
-        }
-
-        // Display the initial chunk
-        displayAllChunks();
-
-        // Store chunks in local storage for later retrieval
-        if (params.chunk) {
-            // If we receive chunks in order, store them
-            localStorage.setItem(`chunk_${params.chunk}`, params.data);
-
-            // Retrieve and display all chunks after receiving all parts
-            const totalChunks = params.total ? parseInt(params.total) : 1;
-            for (let i = 1; i <= totalChunks; i++) {
-                const storedChunk = localStorage.getItem(`chunk_${i}`);
-                if (storedChunk) {
-                    allChunks[i - 1] = storedChunk; // Collect all
+    <h1>File Save Dialog</h1>
+    <p>Data will be saved from GameMaker when passed here.</p>
+</body>
+</html>

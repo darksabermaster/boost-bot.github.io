@@ -3,27 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Save Data</title>
-    <script>
-        function saveDataAsFile(data, filename) {
-            const blob = new Blob([data], { type: 'text/plain' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // This function will listen for data sent from GameMaker and trigger the save
-        window.addEventListener('message', function(event) {
-            const { data, filename } = event.data;
-            saveDataAsFile(data, filename);
-        }, false);
-    </script>
+    <title>Download Level Data</title>
 </head>
 <body>
-    <h1>File Save Dialog</h1>
-    <p>Data will be saved from GameMaker when passed here.</p>
+    <h1>Download Level Data</h1>
+    <a href="path/to/level_data.txt" download>
+        <button>Download Level Data</button>
+    </a>
+    <script>
+        // Optionally, add a message or additional functionality here
+    </script>
 </body>
 </html>

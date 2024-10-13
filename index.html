@@ -47,7 +47,7 @@
         // Check if there's any data received
         if (params.data) {
             // Add the received data to the allChunks array
-            allChunks.push(params.data);
+            allChunks[parseInt(params.chunk) - 1] = params.data; // Store chunk in correct order
         }
 
         // Function to display all chunks in the container
@@ -55,12 +55,14 @@
             const container = document.getElementById('data-container');
             container.innerHTML = ''; // Clear existing content
 
-            // Display all chunks
+            // Display all chunks in order
             allChunks.forEach((chunk, index) => {
-                const chunkDiv = document.createElement('div');
-                chunkDiv.className = 'chunk';
-                chunkDiv.textContent = `Chunk ${index + 1}: ${chunk}`;
-                container.appendChild(chunkDiv);
+                if (chunk) {
+                    const chunkDiv = document.createElement('div');
+                    chunkDiv.className = 'chunk';
+                    chunkDiv.textContent = `Chunk ${index + 1}: ${chunk}`;
+                    container.appendChild(chunkDiv);
+                }
             });
 
             // Show the download button if there are chunks
@@ -87,6 +89,7 @@
 
         // Store chunks in local storage for later retrieval
         if (params.chunk) {
+            // If we receive chunks in order, store them
             localStorage.setItem(`chunk_${params.chunk}`, params.data);
 
             // Retrieve and display all chunks after receiving all parts
@@ -94,19 +97,4 @@
             for (let i = 1; i <= totalChunks; i++) {
                 const storedChunk = localStorage.getItem(`chunk_${i}`);
                 if (storedChunk) {
-                    allChunks.push(storedChunk); // Collect all chunks into one array
-                }
-            }
-            displayAllChunks(); // Display all chunks in the single tab
-
-            // Close the current tab if it's not the first one
-            if (params.chunk > 1) {
-                window.close(); // This will close the extra tabs
-            }
-        }
-
-        // Add event listener for download button
-        document.getElementById('download-btn').addEventListener('click', downloadData);
-    </script>
-</body>
-</html>
+                    allChunks[i - 1] = storedChunk; // Collect all

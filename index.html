@@ -3,19 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download Level Data</title>
+    <title>Level Data Download</title>
 </head>
 <body>
-    <h1>Download Level Data</h1>
-    <a id="downloadLink" href="level_data.txt" style="display:none;">Download</a>
-    <button id="downloadButton">Download Level Data</button>
+    <h1>Level Data</h1>
+    <pre id="levelData"></pre>
+    <button id="downloadBtn">Download Level Data</button>
 
     <script>
-        document.getElementById("downloadButton").onclick = function() {
-            const link = document.getElementById("downloadLink");
-            link.style.display = "block"; // Show the link
-            link.click(); // Programmatically click the link to trigger download
-            link.style.display = "none"; // Hide the link again
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const levelData = urlParams.get('data');
+
+        // Display the level data
+        if (levelData) {
+            document.getElementById('levelData').textContent = decodeURIComponent(levelData);
+        }
+
+        // Download function
+        document.getElementById('downloadBtn').onclick = function() {
+            const blob = new Blob([decodeURIComponent(levelData)], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = 'level_data.txt';
+            link.click();
         };
     </script>
 </body>

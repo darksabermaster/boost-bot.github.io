@@ -7,8 +7,30 @@
 </head>
 <body>
     <h1>Download Level Data</h1>
-    <a href="https://darksabermaster.github.io/boost-bot.github.io/level_data.txt" download>
-        Click here to download the level data
-    </a>
+    <button id="downloadButton">Download Level Data</button>
+
+    <script>
+        document.getElementById('downloadButton').addEventListener('click', function() {
+            // Retrieve the level data from local storage
+            const levelData = localStorage.getItem('boost_bot_level');
+
+            if (levelData) {
+                // Create a blob with the level data
+                const blob = new Blob([levelData], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                
+                // Create a link element and click it to trigger the download
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'boost_bot_level.txt'; // Filename for the downloaded file
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a); // Clean up
+                URL.revokeObjectURL(url); // Release the object URL
+            } else {
+                alert('No level data found in local storage.');
+            }
+        });
+    </script>
 </body>
 </html>

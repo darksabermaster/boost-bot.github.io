@@ -15,11 +15,19 @@
             padding: 10px;
             background-color: #f9f9f9;
         }
+        #download-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <h1>Level Data Display</h1>
     <div id="data-container"></div>
+    
+    <button id="download-btn" style="display: none;">Download Level Data</button>
     
     <script>
         // Function to get URL parameters
@@ -54,6 +62,24 @@
                 chunkDiv.textContent = `Chunk ${index + 1}: ${chunk}`;
                 container.appendChild(chunkDiv);
             });
+
+            // Show the download button if there are chunks
+            if (allChunks.length > 0) {
+                document.getElementById('download-btn').style.display = 'block';
+            }
+        }
+
+        // Function to download all chunks as a .txt file
+        function downloadData() {
+            const blob = new Blob([allChunks.join('\n')], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'level_data.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url); // Clean up
         }
 
         // Display the initial chunk
@@ -72,7 +98,15 @@
                 }
             }
             displayAllChunks(); // Display all chunks in the single tab
+
+            // Close the current tab if it's not the first one
+            if (params.chunk > 1) {
+                window.close(); // This will close the extra tabs
+            }
         }
+
+        // Add event listener for download button
+        document.getElementById('download-btn').addEventListener('click', downloadData);
     </script>
 </body>
 </html>

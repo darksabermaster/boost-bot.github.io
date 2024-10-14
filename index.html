@@ -24,17 +24,19 @@
             link.click();
         }
 
-        // When the button is clicked, create the txt file
-        document.getElementById('downloadBtn').addEventListener('click', function () {
-            // Get data from the URL parameter
-            var data = getURLParameter('data');
-            var fileName = getURLParameter('filename') || 'level_data.txt';
+        // Fetch data from URL parameter
+        var filename = getURLParameter('filename') || 'level_data.txt';
 
-            if (data) {
-                createTxtFile(data, fileName);
-            } else {
-                alert("Error: No data provided");
-            }
+        // Fetch the file and create it when the button is clicked
+        document.getElementById('downloadBtn').addEventListener('click', function () {
+            fetch(filename)
+                .then(response => response.text())
+                .then(data => {
+                    createTxtFile(data, filename);
+                })
+                .catch(error => {
+                    console.error("Error fetching the file: ", error);
+                });
         });
     </script>
 </body>

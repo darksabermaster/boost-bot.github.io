@@ -24,12 +24,12 @@
             link.click();
         }
 
-        // Fetch data and filename from URL parameters
-        var data = getURLParameter('data');
-        var fileName = getURLParameter('filename') || 'level_data.txt';
-
-        // Create the file when the button is clicked
+        // When the button is clicked, create the txt file
         document.getElementById('downloadBtn').addEventListener('click', function () {
+            // Get data from the URL parameter
+            var data = getURLParameter('data');
+            var fileName = getURLParameter('filename') || 'level_data.txt';
+
             if (data) {
                 createTxtFile(data, fileName);
             } else {

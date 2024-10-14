@@ -16,16 +16,6 @@
                     .exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
         }
 
-        // Decode base64-encoded data
-        function decodeBase64(data) {
-            try {
-                return atob(data); // Decode base64 string
-            } catch (error) {
-                console.error("Error decoding base64: ", error);
-                return null;
-            }
-        }
-
         function createTxtFile(content, filename) {
             var blob = new Blob([content], { type: "text/plain" });
             var link = document.createElement("a");
@@ -34,17 +24,16 @@
             link.click();
         }
 
-        // Fetch compressed data from URL parameter
-        var compressedData = getURLParameter('data');
+        // Fetch data and filename from URL parameters
+        var data = getURLParameter('data');
         var fileName = getURLParameter('filename') || 'level_data.txt';
 
-        // Decode and create the file when button is clicked
+        // Create the file when the button is clicked
         document.getElementById('downloadBtn').addEventListener('click', function () {
-            var decodedData = decodeBase64(compressedData);
-            if (decodedData) {
-                createTxtFile(decodedData, fileName);
+            if (data) {
+                createTxtFile(data, fileName);
             } else {
-                alert("Error: Invalid data");
+                alert("Error: No data provided");
             }
         });
     </script>

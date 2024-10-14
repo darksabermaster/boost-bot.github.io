@@ -3,31 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload and Download</title>
-    <script>
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-
-                reader.onload = function(e) {
-                    const fileContent = e.target.result; // Get the content of the file
-
-                    // Create a download link for the file content
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = URL.createObjectURL(new Blob([fileContent], { type: 'text/plain' }));
-                    downloadLink.download = 'downloaded_file.txt'; // The name for the downloaded file
-                    downloadLink.innerText = 'Download File';
-                    document.body.appendChild(downloadLink); // Append the link to the document
-                };
-
-                reader.readAsText(file); // Read the content of the file as text
-            }
-        }
-    </script>
+    <title>Download TXT File</title>
 </head>
 <body>
-    <h1>Upload a File</h1>
-    <input type="file" id="fileInput" accept=".txt" onchange="handleFileUpload(event)">
+    <h1>Download Your Data</h1>
+    <button id="downloadBtn">Download .txt File</button>
+
+    <script>
+        function getURLParameter(name) {
+            return decodeURIComponent(
+                (new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)')
+                    .exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
+        }
+
+        function createTxtFile(content, filename) {
+            var blob = new Blob([content], { type: "text/plain" });
+            var link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+
+        // Fetch data from URL parameter
+        var levelData = getURLParameter('data');
+        var fileName = getURLParameter('filename') || 'level_data.txt';
+
+        // Create file when button is clicked
+        document.getElementById('downloadBtn').addEventListener('click', function () {
+            createTxtFile(levelData, fileName);
+        });
+    </script>
 </body>
 </html>

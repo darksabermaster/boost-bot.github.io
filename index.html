@@ -76,29 +76,30 @@
         const chunkNumber = urlParams.get('chunk');
         const totalChunks = urlParams.get('total');
 
+        // If this is the first chunk, clear the previous data
+        if (chunkNumber == '1') {
+            document.getElementById('dataDisplay').textContent = ''; // Clear the displayed data
+            localStorage.removeItem('allChunks'); // Clear old chunks from localStorage
+        }
+
         // Initialize storage if not already done
         if (!localStorage.getItem('allChunks')) {
             localStorage.setItem('allChunks', JSON.stringify([]));
         }
 
-        // If there is data, store the current chunk
+        // If there is data, store the current chunk and display it
         if (chunkData && chunkNumber) {
             let allChunks = JSON.parse(localStorage.getItem('allChunks'));
             allChunks[chunkNumber - 1] = chunkData;
             localStorage.setItem('allChunks', JSON.stringify(allChunks));
 
+            // Update the displayed data in real time
+            document.getElementById('dataDisplay').textContent = allChunks.join('');
+
             // Check if all chunks are received
             if (allChunks.length == totalChunks) {
-                const combinedData = allChunks.join('');
-
-                // Display data on the page
-                document.getElementById('dataDisplay').textContent = combinedData;
-
                 // Enable the download button
                 document.getElementById('downloadButton').disabled = false;
-
-                // Clear the storage after everything is processed
-                localStorage.removeItem('allChunks');
             }
         }
 
@@ -107,28 +108,9 @@
             let allChunks = JSON.parse(localStorage.getItem('allChunks'));
             let combinedData = allChunks.join('');
             downloadData('level_data.txt', combinedData);
-        }
 
-        // Polling for updates every 1 second (1000ms)
-        setInterval(function() {
-            fetchNewData(); // Call function to check for new data
-        }, 1000);
-
-        // Function to fetch and display new chunks of data
-        function fetchNewData() {
-            fetch(window.location.href)
-                .then(response => response.text())
-                .then(data => {
-                    if (data) {
-                        updateDisplay(data); // Append new data chunk
-                    }
-                });
-        }
-
-        // Function to update the displayed data
-        function updateDisplay(chunk) {
-            let dataDisplay = document.getElementById('dataDisplay');
-            dataDisplay.textContent += chunk; // Add the new chunk to the existing data
+            // Clear the storage only after download
+            localStorage.removeItem('allChunks');
         }
     </script>
 

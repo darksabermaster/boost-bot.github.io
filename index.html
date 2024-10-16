@@ -3,113 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Boost Bot - Level Data</title>
+    <title>Level Data Display</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
+            margin: 20px;
         }
-        h1 {
-            color: #333;
-        }
-        .content {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            margin-top: 20px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .btn:disabled {
-            background-color: #ccc;
-        }
-        #dataDisplay {
-            margin-top: 20px;
-            white-space: pre-wrap; /* To display text with newlines properly */
-            background-color: #f9f9f9;
+        #dataOutput {
+            white-space: pre-wrap; /* Preserve whitespace */
+            border: 1px solid #ccc;
             padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            max-height: 400px;
-            overflow-y: auto;
+            height: 300px;
+            overflow-y: auto; /* Allow scrolling */
         }
     </style>
 </head>
 <body>
 
-    <div class="content">
-        <h1>Level Data - Boost Bot</h1>
-        <p>Data is being loaded chunk by chunk. Once all chunks are received, the full data will be displayed below, and you'll be able to download it as a .txt file.</p>
+<h1>Level Data Output</h1>
+<div id="dataOutput">Loading data...</div>
 
-        <!-- Display the assembled data -->
-        <div id="dataDisplay">Waiting for data...</div>
+<button onclick="downloadData()">Download Level Data</button>
 
-        <!-- Download button -->
-        <button id="downloadButton" class="btn" onclick="downloadFile()" disabled>Download Data</button>
-    </div>
+<script>
+    var allData = [];
+    var totalChunks = 0; // To be set when loading starts
 
-    <script>
-        // Function to download text as a file
-        function downloadData(filename, data) {
-            var blob = new Blob([data], { type: 'text/plain' });
-            var link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = filename;
-            link.click();
+    function addData(chunk) {
+        allData.push(chunk);
+        // Check if all chunks have been received
+        if (allData.length === totalChunks) {
+            // Display the complete data
+            displayData(allData.join('')); // Join all chunks and display
         }
+    }
 
-        // Check if 'data' and 'chunk' parameters exist in the URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const chunkData = urlParams.get('data');
-        const chunkNumber = urlParams.get('chunk');
-        const totalChunks = urlParams.get('total');
+    function displayData(data) {
+        var outputElement = document.getElementById('dataOutput');
+        outputElement.textContent = data; // Set the complete data as text content
+    }
 
-        // Initialize storage if not already done
-        if (!localStorage.getItem('allChunks')) {
-            localStorage.setItem('allChunks', JSON.stringify([]));
+    function downloadData() {
+        var blob = new Blob([allData.join('')], { type: 'text/plain' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'level_data.txt';
+        link.click();
+        URL.revokeObjectURL(link.href); // Clean up
+    }
+
+    // Check URL parameters for incoming data
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    window.onload = function() {
+        var chunk = getUrlParameter('data');
+        totalChunks = parseInt(getUrlParameter('total')); // Set the total chunks expected
+        if (chunk) {
+            addData(chunk);
         }
-
-        // If there is data, store the current chunk
-        if (chunkData && chunkNumber) {
-            let allChunks = JSON.parse(localStorage.getItem('allChunks'));
-            allChunks[chunkNumber - 1] = chunkData;
-            localStorage.setItem('allChunks', JSON.stringify(allChunks));
-
-            // Check if all chunks are received
-            if (allChunks.length == totalChunks) {
-                const combinedData = allChunks.join('');
-
-                // Display data on the page
-                document.getElementById('dataDisplay').textContent = combinedData;
-
-                // Enable the download button
-                document.getElementById('downloadButton').disabled = false;
-
-                // Clear the storage after everything is processed
-                localStorage.removeItem('allChunks');
-            }
-        }
-
-        // Function to download the assembled data when the button is clicked
-        function downloadFile() {
-            let allChunks = JSON.parse(localStorage.getItem('allChunks'));
-            let combinedData = allChunks.join('');
-            downloadData('level_data.txt', combinedData);
-        }
-    </script>
-    
+    };
+</script>
 
 </body>
 </html>

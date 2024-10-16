@@ -51,7 +51,7 @@
 
     <div class="content">
         <h1>Level Data - Boost Bot</h1>
-        <p>Data is being loaded chunk by chunk. Once all chunks are received, the full data will be displayed below, and you'll be able to download it as a .txt file.</p>
+        <p>Data is being loaded chunk by chunk. You will see the data displayed below as it is received, and once all chunks are received, you will be able to download it as a .txt file.</p>
 
         <!-- Display the assembled data -->
         <div id="dataDisplay">Waiting for data...</div>
@@ -87,12 +87,13 @@
             allChunks[chunkNumber - 1] = chunkData;
             localStorage.setItem('allChunks', JSON.stringify(allChunks));
 
+            // Update the display with the new chunk
+            const dataDisplay = document.getElementById('dataDisplay');
+            dataDisplay.textContent += chunkData + '\n'; // Append the new chunk
+
             // Check if all chunks are received
             if (allChunks.length == totalChunks) {
                 const combinedData = allChunks.join('');
-
-                // Display data on the page
-                document.getElementById('dataDisplay').textContent = combinedData;
 
                 // Enable the download button
                 document.getElementById('downloadButton').disabled = false;

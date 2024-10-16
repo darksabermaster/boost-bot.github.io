@@ -96,9 +96,6 @@
 
                 // Enable the download button
                 document.getElementById('downloadButton').disabled = false;
-
-                // Clear the storage after everything is processed
-                localStorage.removeItem('allChunks');
             }
         }
 
@@ -107,6 +104,9 @@
             let allChunks = JSON.parse(localStorage.getItem('allChunks'));
             let combinedData = allChunks.join('');
             downloadData('level_data.txt', combinedData);
+
+            // Clear the storage only after download
+            localStorage.removeItem('allChunks');
         }
     </script>
 

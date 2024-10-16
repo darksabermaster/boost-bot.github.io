@@ -70,20 +70,11 @@
             link.click();
         }
 
-        // Clear previous data on page load
-        function clearPreviousData() {
-            document.getElementById('dataDisplay').textContent = "Waiting for data...";
-            localStorage.removeItem('allChunks'); // Clear previous chunks from local storage
-        }
-
         // Check if 'data' and 'chunk' parameters exist in the URL
         const urlParams = new URLSearchParams(window.location.search);
         const chunkData = urlParams.get('data');
         const chunkNumber = urlParams.get('chunk');
         const totalChunks = urlParams.get('total');
-
-        // Clear previous data when the page loads
-        clearPreviousData();
 
         // Initialize storage if not already done
         if (!localStorage.getItem('allChunks')) {

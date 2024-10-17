@@ -37,7 +37,7 @@
         }
         #dataDisplay {
             margin-top: 20px;
-            white-space: pre-wrap; /* To display text with newlines properly */
+            white-space: pre-wrap;
             background-color: #f9f9f9;
             padding: 10px;
             border: 1px solid #ddd;
@@ -84,29 +84,30 @@
         // If there is data, store the current chunk
         if (chunkData && chunkNumber) {
             let allChunks = JSON.parse(localStorage.getItem('allChunks'));
-            allChunks[chunkNumber - 1] = chunkData;
-            localStorage.setItem('allChunks', JSON.stringify(allChunks));
+            
+            // Append the current chunk if it's not already in the list
+            if (!allChunks[chunkNumber - 1]) {
+                allChunks[chunkNumber - 1] = chunkData;
+                localStorage.setItem('allChunks', JSON.stringify(allChunks));
 
-            // Display current data in real-time
-            document.getElementById('dataDisplay').textContent = allChunks.join('');
+                // Check if the chunk contains "c_end"
+                if (chunkData.includes('"object":"c_end"')) {
+                    const combinedData = allChunks.join('');
+                    
+                    // Display data on the page
+                    document.getElementById('dataDisplay').textContent = combinedData;
 
-            // Check if all chunks are received
-            if (allChunks.length == totalChunks) {
-                const combinedData = allChunks.join('');
+                    // Enable the download button
+                    document.getElementById('downloadButton').disabled = false;
 
-                // Display the full data on the page
-                document.getElementById('dataDisplay').textContent = combinedData;
-
-                // Enable the download button
-                document.getElementById('downloadButton').disabled = false;
-
-                // Clear the storage after everything is processed
-                localStorage.removeItem('allChunks');
-            } else {
-                // Close the tab automatically if all chunks are not received yet
-                setTimeout(() => {
+                    // Clear the storage and stop processing
+                    localStorage.removeItem('allChunks');
+                    alert('All chunks received! Closing tab.');
                     window.close();
-                }, 1000); // Close the tab after 1 second
+                } else {
+                    // If not "c_end", update the display with the chunks received so far
+                    document.getElementById('dataDisplay').textContent = allChunks.join('');
+                }
             }
         }
 

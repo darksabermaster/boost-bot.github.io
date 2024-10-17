@@ -103,13 +103,13 @@
                 // Display the full data on the page
                 document.getElementById('dataDisplay').textContent = combinedData;
 
-                // Enable the download button
+                // Enable the download button once all chunks are received
                 document.getElementById('downloadButton').disabled = false;
 
                 // Clear the storage after everything is processed
                 localStorage.removeItem('allChunks');
             } else {
-                // Close the tab automatically if all chunks are not received yet
+                // Delay closing the tab until chunks are processed, but keep the download button functional
                 setTimeout(() => {
                     window.close();
                 }, 1000); // Close the tab after 1 second

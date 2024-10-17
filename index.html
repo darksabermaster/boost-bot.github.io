@@ -32,9 +32,6 @@
             cursor: pointer;
             font-size: 16px;
         }
-        .btn:disabled {
-            background-color: #ccc;
-        }
         #dataDisplay {
             margin-top: 20px;
             white-space: pre-wrap; /* To display text with newlines properly */
@@ -91,9 +88,14 @@
             const combinedData = allChunks.join('');
             document.getElementById('dataDisplay').textContent = combinedData;
 
-            // Clear storage if all chunks are received
+            // If all chunks are received, clear storage and allow download
             if (allChunks.length == totalChunks) {
                 localStorage.removeItem('allChunks');
+            } else {
+                // If data is not fully received, close the tab after 3 seconds
+                setTimeout(function() {
+                    window.close();
+                }, 3000); // Adjust this time if necessary
             }
         }
 

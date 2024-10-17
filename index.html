@@ -37,7 +37,7 @@
         }
         #dataDisplay {
             margin-top: 20px;
-            white-space: pre-wrap;
+            white-space: pre-wrap; /* To display text with newlines properly */
             background-color: #f9f9f9;
             padding: 10px;
             border: 1px solid #ddd;
@@ -76,38 +76,30 @@
         const chunkNumber = urlParams.get('chunk');
         const totalChunks = urlParams.get('total');
 
+        // If this is the first chunk, clear the previous data
+        if (chunkNumber == '1') {
+            document.getElementById('dataDisplay').textContent = ''; // Clear the displayed data
+            localStorage.removeItem('allChunks'); // Clear old chunks from localStorage
+        }
+
         // Initialize storage if not already done
         if (!localStorage.getItem('allChunks')) {
             localStorage.setItem('allChunks', JSON.stringify([]));
         }
 
-        // If there is data, store the current chunk
+        // If there is data, store the current chunk and display it
         if (chunkData && chunkNumber) {
             let allChunks = JSON.parse(localStorage.getItem('allChunks'));
-            
-            // Append the current chunk if it's not already in the list
-            if (!allChunks[chunkNumber - 1]) {
-                allChunks[chunkNumber - 1] = chunkData;
-                localStorage.setItem('allChunks', JSON.stringify(allChunks));
+            allChunks[chunkNumber - 1] = chunkData;
+            localStorage.setItem('allChunks', JSON.stringify(allChunks));
 
-                // Check if the chunk contains "c_end"
-                if (chunkData.includes('"object":"c_end"')) {
-                    const combinedData = allChunks.join('');
-                    
-                    // Display data on the page
-                    document.getElementById('dataDisplay').textContent = combinedData;
+            // Update the displayed data in real time
+            document.getElementById('dataDisplay').textContent = allChunks.join('');
 
-                    // Enable the download button
-                    document.getElementById('downloadButton').disabled = false;
-
-                    // Clear the storage and stop processing
-                    localStorage.removeItem('allChunks');
-                    alert('All chunks received! Closing tab.');
-                    window.close();
-                } else {
-                    // If not "c_end", update the display with the chunks received so far
-                    document.getElementById('dataDisplay').textContent = allChunks.join('');
-                }
+            // Check if all chunks are received
+            if (allChunks.length == totalChunks) {
+                // Enable the download button
+                document.getElementById('downloadButton').disabled = false;
             }
         }
 
@@ -116,6 +108,9 @@
             let allChunks = JSON.parse(localStorage.getItem('allChunks'));
             let combinedData = allChunks.join('');
             downloadData('level_data.txt', combinedData);
+
+            // Clear the storage only after download
+            localStorage.removeItem('allChunks');
         }
     </script>
 

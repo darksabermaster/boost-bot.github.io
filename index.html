@@ -81,6 +81,12 @@
             localStorage.setItem('allChunks', JSON.stringify([]));
         }
 
+        // Clear previous data if starting a new set of chunks (chunkNumber == 1)
+        if (chunkNumber == 1) {
+            localStorage.setItem('allChunks', JSON.stringify([]));  // Reset stored chunks
+            document.getElementById('dataDisplay').textContent = 'Waiting for data...';  // Clear displayed data
+        }
+
         // If there is data, store the current chunk
         if (chunkData && chunkNumber) {
             let allChunks = JSON.parse(localStorage.getItem('allChunks'));

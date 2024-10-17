@@ -91,7 +91,7 @@
             document.getElementById('dataDisplay').textContent = allChunks.join('');
 
             // Check if all chunks are received
-            if (allChunks.filter(Boolean).length == totalChunks) {
+            if (allChunks.length == totalChunks) {
                 const combinedData = allChunks.join('');
 
                 // Display the full data on the page
@@ -103,10 +103,10 @@
                 // Clear the storage after everything is processed
                 localStorage.removeItem('allChunks');
             } else {
-                // Only close the tab if not all chunks are received
+                // Close the tab automatically if all chunks are not received yet
                 setTimeout(() => {
                     window.close();
-                }, 1000); // Close the tab after 1 second if not finished
+                }, 1000); // Close the tab after 1 second
             }
         }
 

@@ -51,13 +51,13 @@
 
     <div class="content">
         <h1>Level Data - Boost Bot</h1>
-        <p>Data is being loaded chunk by chunk. Once all chunks are received, the full data will be displayed below, and you'll be able to download it as a .txt file.</p>
+        <p>Data is being loaded chunk by chunk. Once all chunks are received, the full data will be displayed below. You can download the data at any time.</p>
 
         <!-- Display the assembled data -->
         <div id="dataDisplay">Waiting for data...</div>
 
         <!-- Download button -->
-        <button id="downloadButton" class="btn" onclick="downloadFile()" disabled>Download Data</button>
+        <button id="downloadButton" class="btn" onclick="downloadFile()">Download Data</button>
     </div>
 
     <script>
@@ -81,45 +81,26 @@
             localStorage.setItem('allChunks', JSON.stringify([]));
         }
 
-        // Clear previous data if starting a new set of chunks (chunkNumber == 1)
-        if (chunkNumber == 1) {
-            localStorage.setItem('allChunks', JSON.stringify([]));  // Reset stored chunks
-            document.getElementById('dataDisplay').textContent = 'Waiting for data...';  // Clear displayed data
-        }
-
         // If there is data, store the current chunk
         if (chunkData && chunkNumber) {
             let allChunks = JSON.parse(localStorage.getItem('allChunks'));
             allChunks[chunkNumber - 1] = chunkData;
             localStorage.setItem('allChunks', JSON.stringify(allChunks));
 
-            // Display current data in real-time
-            document.getElementById('dataDisplay').textContent = allChunks.join('');
+            // Display the current assembled data on the page
+            const combinedData = allChunks.join('');
+            document.getElementById('dataDisplay').textContent = combinedData;
 
-            // Check if all chunks are received
+            // Clear storage if all chunks are received
             if (allChunks.length == totalChunks) {
-                const combinedData = allChunks.join('');
-
-                // Display the full data on the page
-                document.getElementById('dataDisplay').textContent = combinedData;
-
-                // Enable the download button once all chunks are received
-                document.getElementById('downloadButton').disabled = false;
-
-                // Clear the storage after everything is processed
                 localStorage.removeItem('allChunks');
-            } else {
-                // Delay closing the tab until chunks are processed, but keep the download button functional
-                setTimeout(() => {
-                    window.close();
-                }, 1000); // Close the tab after 1 second
             }
         }
 
         // Function to download the assembled data when the button is clicked
         function downloadFile() {
             let allChunks = JSON.parse(localStorage.getItem('allChunks'));
-            let combinedData = allChunks.join('');
+            let combinedData = allChunks ? allChunks.join('') : document.getElementById('dataDisplay').textContent;
             downloadData('level_data.txt', combinedData);
         }
     </script>
